@@ -1,52 +1,64 @@
+from flask import Flask, request, jsonify
 import requests
 import os
 from requests.auth import HTTPBasicAuth
 import json
 
-url = "https://aadeshdinkargupta2003.atlassian.net/rest/api/3/issue"
+app = Flask(__name__)
 
-API_TOKEN = os.getenv("JIRA_API_TOKEN")
+@app.route("/createJIRA", methods=['POST'])
+def createJIRA():
+    data = request.get_json()
+    body = data.get("body", "")
 
-auth = HTTPBasicAuth("aadeshdinkargupta.com", API_TOKEN)
+    if body != "/jira":
+        return "", 204
 
-headers = {
-    "Accept": "application/json",
-    "Content-Type": "application/json"
-}
+    url = "https://aadeshdinkargupta2003.atlassian.net/rest/api/3/issue"
 
-payload = json.dumps({
-    "fields": {
-        "project": {
-            "key": "ADG"
-        },
-        "summary": "First JIRA ticket",
-        "description": {
-            "type": "doc",
-            "version": 1,
-            "content": [
-                {
-                    "type": "paragraph",
-                    "content": [
-                        {
-                            "type": "text",
-                            "text": "My first JIRA ticket"
-                        }
-                    ]
-                }
-            ]
-        },
-        "issuetype": {
-            "id": "10009" 
-        }
+    API_TOKEN = os.getenv("JIRA_API_TOKEN")
+    auth = HTTPBasicAuth("aadeshdinkargupta.com", API_TOKEN)
+
+    headers = {
+        "Accept": "application/json",
+        "Content-Type": "application/json"
     }
-})
 
-response = requests.request(
-    "POST",
-    url,
-    headers=headers,
-    auth=auth,
-    data=payload
-)
+    payload = json.dumps({
+        "fields": {
+            "project": {
+                "key": "ADG"
+            },
+            "summary": "First JIRA ticket",
+            "description": {
+                "type": "doc",
+                "version": 1,
+                "content": [
+                    {
+                        "type": "paragraph",
+                        "content": [
+                            {
+                                "type": "text",
+                                "text": "My first JIRA ticket"
+                            }
+                        ]
+                    }
+                ]
+            },
+            "issuetype": {
+                "id": "10009"
+            }
+        }
+    })
 
-print(json.dumps(json.loads(response.text), sort_keys=True, indent=4, separators=(",", ": ")))
+    response = requests.post(
+        url,
+        headers=headers,
+        auth=auth,
+        data=payload
+    )
+
+    return jsonify(response.json())
+
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=5000)
