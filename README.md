@@ -35,48 +35,45 @@ sudo apt update
 # Install Python, pip, and Flask
 sudo apt install python3 python3-pip
 pip3 install flask requests
-3. Add Your Flask App Code
+
+```
+### 3. Add Your Flask App Code
 Create a new Python file (e.g., app.py) and paste your Flask app code. Replace the JIRA API token and email in your code with your actual credentials.
 
-4. Run the Flask App
+### 4. Run the Flask App
 Start your Flask app by running the following command:
-
-bash
-Copy
-Edit
+```
 python3 app.py
+```
 The app will start running on port 5000 by default.
 
-5. Set Up GitHub Webhook
+### 5. Set Up GitHub Webhook
 In your GitHub repository, go to Settings → Webhooks → Add webhook.
 
 Set the payload URL to point to the EC2 instance's public IP on port 5000:
 
-bash
-Copy
-Edit
+```
 http://<your-ec2-ip>:5000/createJIRA
+```
 Set the content type to application/json.
 
 Select Let me select individual events and choose Issue comment.
 
 Save the webhook.
 
-6. Test the Integration
+### 6. Test the Integration
 To trigger the JIRA ticket creation, comment /jira on a GitHub issue.
 
 The Flask app will receive the webhook, detect the comment, and create a JIRA ticket.
 
 Example Request from GitHub Webhook
 Endpoint:
-bash
-Copy
-Edit
+```
 POST http://<your-ec2-ip>:5000/createJIRA
+```
+
 Request Body:
-json
-Copy
-Edit
+```
 {
   "action": "created",
   "issue": {
@@ -88,22 +85,20 @@ Edit
     "body": "/jira"
   }
 }
+```
 Response:
-json
-Copy
-Edit
+```
 {
   "id": "XXXX",
   "key": "ADG-1",
   "self": "https://aadeshdinkargupta2003.atlassian.net/rest/api/3/issue/XXXX"
 }
-Notes
-Security: Ensure your EC2 instance is properly secured, and only trusted sources can access the Flask app.
+```
+## Notes
 
-Cost: Running the app on EC2 incurs AWS charges, so monitor your costs.
+- Security: Ensure your EC2 instance is properly secured, and only trusted sources can access the Flask app.
+- Cost: Running the app on EC2 incurs AWS charges, so monitor your costs.
+- JIRA API: Make sure your JIRA account has API access and your API token is valid.
+- GitHub Webhook: Ensure the webhook is properly configured to send data to the Flask app.
 
-JIRA API: Make sure your JIRA account has API access and your API token is valid.
-
-GitHub Webhook: Ensure the webhook is properly configured to send data to the Flask app.
-
-This app allows for a seamless integration between GitHub and JIRA by automating ticket creation via issue comments.
+### This app allows for a seamless integration between GitHub and JIRA by automating ticket creation via issue comments.
